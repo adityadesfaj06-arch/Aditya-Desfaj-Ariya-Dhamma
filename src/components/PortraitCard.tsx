@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface PortraitCardProps {
   name: string;
@@ -16,155 +16,153 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
   program = 'D4 Bisnis Digital',
   semester = 'Semester 3',
 }) => {
-  const [customPhoto, setCustomPhoto] = useState<string | null>(() => {
+  // Check if image exists in localStorage or use direct static asset
+  const [imgError, setImgError] = useState(false);
+  const [photoUrl] = useState<string | null>(() => {
     try {
-      return localStorage.getItem('aditya_portfolio_photo');
+      const stored = localStorage.getItem('aditya_portfolio_photo');
+      if (stored) return stored;
     } catch {
-      return null;
+      // ignore
     }
+    return '/aditya-photo.jpg';
   });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setCustomPhoto(result);
-        try {
-          localStorage.setItem('aditya_portfolio_photo', result);
-        } catch {
-          // ignore storage error
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
-    <div className="relative group w-full max-w-[420px] mx-auto">
-      {/* Outer Card with subtle shadow & border matching reference image */}
-      <div className="bg-white p-3.5 rounded-[32px] shadow-2xl shadow-purple-950/10 border border-slate-100 transition-all duration-300 hover:shadow-purple-900/15">
+    <div className="relative group w-full max-w-[420px] mx-auto select-none">
+      {/* Outer Card Frame with subtle shadow & border matching reference image */}
+      <div className="bg-white p-3.5 rounded-[32px] shadow-2xl shadow-purple-950/10 border border-slate-200/90 transition-all duration-300 hover:shadow-purple-900/15">
         
         {/* Photo Container */}
-        <div className="relative rounded-[24px] overflow-hidden aspect-[3.8/5] bg-gradient-to-b from-[#8C929E] via-[#666C7A] to-[#454B57] flex flex-col justify-end select-none">
+        <div className="relative rounded-[24px] overflow-hidden aspect-[3.7/5] bg-[#E8EBF0] flex flex-col justify-end select-none">
           
-          {customPhoto ? (
+          {/* Permanent Photo Display */}
+          {photoUrl && !imgError ? (
             <img 
-              src={customPhoto} 
-              alt={name} 
+              src={photoUrl} 
+              alt={name}
+              onError={() => setImgError(true)}
               className="absolute inset-0 w-full h-full object-cover object-top"
             />
-          ) : (
-            /* High-fidelity Vector Representation of Aditya in Batik Shirt */
-            <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-end overflow-hidden">
-              {/* Studio Backdrop */}
-              <div className="absolute inset-0 bg-gradient-to-b from-slate-200 via-slate-300 to-slate-400" />
-              
-              {/* Whiteboard Frame Bar behind */}
-              <div className="absolute top-[28%] left-0 right-0 h-1.5 bg-slate-400/50 shadow-inner" />
-              <div className="absolute top-[30%] left-0 right-0 h-0.5 bg-white/60" />
+          ) : null}
 
-              {/* Portrait SVG Illustration of Aditya with Batik Cloud Motif */}
+          {/* High-fidelity Vector Representation of Aditya in Batik Shirt (Matching WhatsApp Photo) */}
+          {(imgError || !photoUrl) && (
+            <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-end overflow-hidden">
+              {/* Studio White Presentation Screen Backdrop */}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#F7F8FA] via-[#EEF0F4] to-[#DFE3E9]" />
+              
+              {/* Screen Rail Frame Bar at Bottom Background (matching real photo) */}
+              <div className="absolute bottom-28 left-0 right-0 h-2 bg-slate-300 shadow-inner" />
+              <div className="absolute bottom-[114px] left-0 right-0 h-0.5 bg-white" />
+
+              {/* Ambient Soft Studio Shadow behind Aditya */}
+              <div className="absolute inset-x-12 top-20 bottom-10 bg-slate-400/20 blur-2xl rounded-full" />
+
+              {/* Portrait SVG Illustration of Aditya */}
               <svg 
                 viewBox="0 0 400 520" 
-                className="relative z-10 w-full h-[105%] max-h-none translate-y-3 object-cover"
+                className="relative z-10 w-full h-[106%] max-h-none translate-y-3 object-cover"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <defs>
-                  {/* Skin Tone Gradient */}
-                  <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#C99368" />
-                    <stop offset="100%" stopColor="#A8734A" />
+                  {/* Skin Tone Gradient (Indonesian Medium Tan) */}
+                  <linearGradient id="adityaSkin" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#C99468" />
+                    <stop offset="50%" stopColor="#BA8356" />
+                    <stop offset="100%" stopColor="#A26C41" />
                   </linearGradient>
 
-                  {/* Batik Cloud Pattern Pattern */}
-                  <pattern id="batikClouds" width="60" height="60" patternUnits="userSpaceOnUse">
-                    {/* Dark Navy Background */}
-                    <rect width="60" height="60" fill="#1B2232" />
-                    {/* Golden/Tan Cloud Swirls (Megamendung style) */}
-                    <path d="M 5 30 Q 15 15, 30 25 T 55 25 A 8 8 0 0 1 50 38 Q 35 45, 20 38 Z" fill="#998064" opacity="0.8" />
-                    <path d="M 8 30 Q 16 18, 28 26 T 52 26" stroke="#D3BA9B" strokeWidth="1.5" fill="none" />
-                    <path d="M 12 30 Q 18 22, 26 28 T 48 28" stroke="#EFE4D2" strokeWidth="1" fill="none" />
-                    {/* Secondary swirl */}
-                    <path d="M 30 55 Q 40 40, 55 50" stroke="#B89F82" strokeWidth="1.5" fill="none" opacity="0.7" />
+                  {/* Facial Highlight Gradient */}
+                  <linearGradient id="skinHighlight" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#DFAD82" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#B67F54" stopOpacity="0" />
+                  </linearGradient>
+
+                  {/* Batik Megamendung Pattern (Navy, Caramel, Tan, Cream, Slate) */}
+                  <pattern id="batikPattern" width="70" height="70" patternUnits="userSpaceOnUse">
+                    {/* Deep Midnight Navy Base */}
+                    <rect width="70" height="70" fill="#182032" />
+
+                    {/* Megamendung Cloud Shape 1 */}
+                    <path d="M 0 35 Q 15 15, 35 25 T 65 25 A 10 10 0 0 1 60 40 Q 40 50, 20 40 Z" fill="#8C7456" opacity="0.9" />
+                    <path d="M 5 35 Q 18 18, 32 27 T 60 27" stroke="#D8C4AA" strokeWidth="2" fill="none" />
+                    <path d="M 10 35 Q 20 23, 28 30 T 54 30" stroke="#F4EDE2" strokeWidth="1.5" fill="none" />
+                    <path d="M 15 35 Q 22 28, 26 32 T 48 32" stroke="#485A75" strokeWidth="1" fill="none" />
+
+                    {/* Cloud Shape 2 (Offset diagonal) */}
+                    <path d="M 35 70 Q 50 50, 70 60" stroke="#BAA284" strokeWidth="2" fill="none" />
+                    <path d="M 25 5 Q 45 20, 55 5" stroke="#7A6449" strokeWidth="1.5" fill="none" />
+                    <circle cx="50" cy="55" r="2.5" fill="#E8DBC9" />
+                    <circle cx="15" cy="65" r="2" fill="#E8DBC9" />
                   </pattern>
 
-                  {/* Hair Gradient */}
-                  <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1C1818" />
-                    <stop offset="100%" stopColor="#0B0909" />
+                  {/* Hair Texture Gradient */}
+                  <linearGradient id="adityaHair" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#241E1E" />
+                    <stop offset="60%" stopColor="#151212" />
+                    <stop offset="100%" stopColor="#080707" />
                   </linearGradient>
                 </defs>
 
-                {/* Head / Neck */}
-                <path d="M 175 220 L 175 270 Q 200 285 225 270 L 225 220 Z" fill="url(#skinGrad)" />
-                {/* Neck shadow */}
-                <path d="M 175 220 Q 200 240 225 220 L 225 235 Q 200 250 175 235 Z" fill="#8C5C38" opacity="0.4" />
+                {/* Neck & Shadows */}
+                <path d="M 172 215 L 172 268 Q 200 282 228 268 L 228 215 Z" fill="url(#adityaSkin)" />
+                <path d="M 172 215 Q 200 238 228 215 L 228 232 Q 200 248 172 232 Z" fill="#84522C" opacity="0.4" />
 
                 {/* Ears */}
-                <ellipse cx="140" cy="180" rx="9" ry="16" fill="url(#skinGrad)" />
-                <ellipse cx="260" cy="180" rx="9" ry="16" fill="url(#skinGrad)" />
+                <ellipse cx="141" cy="182" rx="9.5" ry="16" fill="url(#adityaSkin)" />
+                <path d="M 141 174 Q 144 182 141 190" stroke="#875630" strokeWidth="1.5" fill="none" />
+                <ellipse cx="259" cy="182" rx="9.5" ry="16" fill="url(#adityaSkin)" />
+                <path d="M 259 174 Q 256 182 259 190" stroke="#875630" strokeWidth="1.5" fill="none" />
 
-                {/* Face Shape */}
-                <path d="M 144 160 Q 142 220 200 236 Q 258 220 256 160 Q 250 115 200 115 Q 150 115 144 160 Z" fill="url(#skinGrad)" />
+                {/* Face Structure */}
+                <path d="M 145 158 Q 143 218 200 236 Q 257 218 255 158 Q 250 114 200 114 Q 150 114 145 158 Z" fill="url(#adityaSkin)" />
+                <ellipse cx="170" cy="170" rx="20" ry="30" fill="url(#skinHighlight)" />
 
-                {/* Hair (Short neat style matching photo) */}
-                <path d="M 138 155 Q 142 112 175 102 Q 200 96 225 102 Q 258 112 262 155 Q 262 135 248 116 Q 225 106 200 106 Q 175 106 152 116 Q 140 135 138 155 Z" fill="url(#hairGrad)" />
-                <path d="M 148 128 Q 200 115 252 128 Q 256 145 258 155 Q 248 135 200 130 Q 152 135 144 155 Q 146 142 148 128 Z" fill="#111" />
+                {/* Hair (Short, Neat, Professional Combed Style matching photo) */}
+                <path d="M 139 155 Q 143 112 176 101 Q 200 95 224 101 Q 257 112 261 155 Q 261 135 248 116 Q 224 105 200 105 Q 176 105 152 116 Q 141 135 139 155 Z" fill="url(#adityaHair)" />
+                <path d="M 148 127 Q 200 114 252 127 Q 255 142 258 152 Q 248 133 200 128 Q 152 133 144 152 Q 146 140 148 127 Z" fill="#120F0F" />
 
                 {/* Eyebrows */}
-                <path d="M 160 152 Q 175 148 186 153" stroke="#221B17" strokeWidth="4" strokeLinecap="round" fill="none" />
-                <path d="M 214 153 Q 225 148 240 152" stroke="#221B17" strokeWidth="4" strokeLinecap="round" fill="none" />
+                <path d="M 158 153 Q 174 148 186 153" stroke="#1F1916" strokeWidth="4" strokeLinecap="round" fill="none" />
+                <path d="M 214 153 Q 226 148 242 153" stroke="#1F1916" strokeWidth="4" strokeLinecap="round" fill="none" />
 
-                {/* Eyes */}
-                <ellipse cx="173" cy="165" rx="7" ry="4.5" fill="#221B17" />
-                <circle cx="174.5" cy="164" r="1.2" fill="#FFF" />
-                <ellipse cx="227" cy="165" rx="7" ry="4.5" fill="#221B17" />
-                <circle cx="228.5" cy="164" r="1.2" fill="#FFF" />
+                {/* Eyes (Warm, Confident, Gentle) */}
+                <ellipse cx="173" cy="166" rx="7" ry="4.5" fill="#1F1916" />
+                <circle cx="174.5" cy="165" r="1.3" fill="#FFF" />
+                <ellipse cx="227" cy="166" rx="7" ry="4.5" fill="#1F1916" />
+                <circle cx="228.5" cy="165" r="1.3" fill="#FFF" />
 
                 {/* Nose */}
-                <path d="M 197 165 L 195 188 Q 200 193 205 188" stroke="#9E6840" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                <ellipse cx="193" cy="189" rx="3.5" ry="2" fill="#9E6840" opacity="0.6" />
-                <ellipse cx="207" cy="189" rx="3.5" ry="2" fill="#9E6840" opacity="0.6" />
+                <path d="M 197 166 L 195 188 Q 200 193 205 188" stroke="#945F37" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                <ellipse cx="193" cy="189" rx="3.5" ry="2" fill="#945F37" opacity="0.6" />
+                <ellipse cx="207" cy="189" rx="3.5" ry="2" fill="#945F37" opacity="0.6" />
 
-                {/* Smile / Mouth */}
-                <path d="M 183 207 Q 200 216 217 207" stroke="#874735" strokeWidth="3" strokeLinecap="round" fill="none" />
-                <path d="M 187 207 Q 200 212 213 207" stroke="#FFF" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.7" />
+                {/* Approachable Closed-Lip Smile */}
+                <path d="M 183 208 Q 200 217 217 208" stroke="#874735" strokeWidth="3" strokeLinecap="round" fill="none" />
+                <path d="M 186 208 Q 200 213 214 208" stroke="#FFF" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.6" />
 
-                {/* Batik Shirt Body with Folded Arms */}
+                {/* Batik Shirt Body with Folded Arms Pose */}
                 {/* Shoulders & Torso */}
-                <path d="M 100 300 Q 130 250 175 255 L 225 255 Q 270 250 300 300 L 325 430 L 75 430 Z" fill="url(#batikClouds)" />
+                <path d="M 95 300 Q 128 250 172 254 L 228 254 Q 272 250 305 300 L 330 435 L 70 435 Z" fill="url(#batikPattern)" />
 
                 {/* Collar */}
-                <path d="M 175 255 L 190 295 L 200 270 L 210 295 L 225 255 Z" fill="#182030" stroke="#CBB494" strokeWidth="1.5" />
-                <path d="M 198 290 L 198 420" stroke="#CBB494" strokeWidth="2" strokeDasharray="3,6" />
+                <path d="M 172 254 L 188 295 L 200 268 L 212 295 L 228 254 Z" fill="#141C2B" stroke="#D3BD9F" strokeWidth="1.8" />
+                {/* Button Placket */}
+                <path d="M 200 292 L 200 425" stroke="#D3BD9F" strokeWidth="2" strokeDasharray="3,7" />
 
-                {/* Folded Arms in Front (matching pose in photo) */}
-                <path d="M 90 320 Q 110 390 190 410 Q 240 410 310 320 L 315 370 Q 240 435 180 435 Q 100 420 80 370 Z" fill="url(#batikClouds)" stroke="#111827" strokeWidth="2" />
+                {/* Folded Arms in Front (Arms crossed pose matching photo) */}
+                <path d="M 85 320 Q 105 390 190 410 Q 240 410 315 320 L 320 370 Q 240 435 180 435 Q 95 420 75 370 Z" fill="url(#batikPattern)" stroke="#111722" strokeWidth="2" />
 
-                {/* Wrists / Forearm crossing */}
-                <path d="M 155 385 Q 200 405 245 385" stroke="#CBB494" strokeWidth="2" fill="none" />
-                
-                {/* Lower body shadow */}
-                <rect y="440" width="400" height="80" fill="#131924" />
+                {/* Wrists / Forearm Crossing Details */}
+                <path d="M 150 385 Q 200 405 250 385" stroke="#D3BD9F" strokeWidth="2.5" fill="none" />
+                <path d="M 160 395 Q 200 412 240 395" stroke="#9A7F5F" strokeWidth="1.5" fill="none" />
+
+                {/* Dark Trousers at the Base */}
+                <rect y="445" width="400" height="75" fill="#10141D" />
               </svg>
             </div>
           )}
-
-          {/* Photo Custom Upload Button in Corner */}
-          <label 
-            className="absolute top-3 right-3 z-30 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white cursor-pointer backdrop-blur-md transition-all shadow-md"
-            title="Gunakan foto asli Anda"
-          >
-            <Camera className="w-4 h-4" />
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleImageUpload} 
-              className="hidden" 
-            />
-          </label>
 
           {/* Bottom Gradient Overlay Box matching reference */}
           <div className="relative z-20 p-5 bg-gradient-to-t from-[#260E45]/95 via-[#2E1054]/85 to-transparent pt-12 text-white">
