@@ -15,12 +15,17 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
   program = 'D4 Bisnis Digital',
   semester = 'Semester 3',
 }) => {
-  // Candidate photo paths
+  // Candidate photo paths (supports exact filename variations from OS)
   const candidatePaths = [
+    '/aditya-photo.jpg.jpeg',
     '/aditya-photo.jpg',
+    '/aditya-photo.jpeg',
     '/WhatsApp Image 2026-09-26 at 13.21.51.jpeg',
+    '/WhatsApp Image 2026-09-26 at 13.21.51.jpg',
     '/photo.jpg',
+    '/photo.jpeg',
     '/aditya.jpg',
+    '/aditya.jpeg',
   ];
 
   const [candidateIndex, setCandidateIndex] = useState(0);
