@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Camera, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface PortraitCardProps {
   name: string;
@@ -16,59 +15,39 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
   program = 'D4 Bisnis Digital',
   semester = 'Semester 3',
 }) => {
-  // Check candidate image sources in order of preference
+  // Candidate photo paths
   const candidatePaths = [
     '/aditya-photo.jpg',
     '/WhatsApp Image 2026-09-26 at 13.21.51.jpeg',
     '/photo.jpg',
     '/aditya.jpg',
-    '/profile.jpg',
   ];
 
   const [candidateIndex, setCandidateIndex] = useState(0);
-  const [userPhoto, setUserPhoto] = useState<string | null>(() => {
+  const [photoLoaded, setPhotoLoaded] = useState(false);
+
+  // Check stored photo or candidates
+  const storedPhoto = (() => {
     try {
       return localStorage.getItem('aditya_portfolio_photo');
     } catch {
       return null;
     }
-  });
+  })();
 
-  const [hasRealPhoto, setHasRealPhoto] = useState(false);
+  const activeSrc = storedPhoto || candidatePaths[candidateIndex];
 
-  const handleImageError = () => {
-    // If not user-uploaded and there are more candidates, try next candidate
-    if (!userPhoto && candidateIndex < candidatePaths.length - 1) {
+  const handleError = () => {
+    if (!storedPhoto && candidateIndex < candidatePaths.length - 1) {
       setCandidateIndex((prev) => prev + 1);
     } else {
-      setHasRealPhoto(false);
+      setPhotoLoaded(false);
     }
   };
 
-  const handleImageLoad = () => {
-    setHasRealPhoto(true);
+  const handleLoad = () => {
+    setPhotoLoaded(true);
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setUserPhoto(result);
-        setHasRealPhoto(true);
-        try {
-          localStorage.setItem('aditya_portfolio_photo', result);
-        } catch {
-          // ignore
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Determine current active image URL
-  const currentSrc = userPhoto || candidatePaths[candidateIndex];
 
   return (
     <div className="relative group w-full max-w-[420px] mx-auto select-none">
@@ -78,19 +57,19 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
         {/* Photo Container */}
         <div className="relative rounded-[24px] overflow-hidden aspect-[3.7/5] bg-[#E8EBF0] flex flex-col justify-end select-none">
           
-          {/* Main Photo Image Element */}
+          {/* Main Photo of Aditya */}
           <img 
-            src={currentSrc} 
+            src={activeSrc} 
             alt={name}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 ${
-              hasRealPhoto ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            onLoad={handleLoad}
+            onError={handleError}
+            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-200 ${
+              photoLoaded ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}
           />
 
-          {/* Fallback Detailed Illustration if image is loading or hasn't loaded yet */}
-          {!hasRealPhoto && (
+          {/* Fallback Representation (Matching WhatsApp Image 2026-09-26 at 13.21.51.jpeg) */}
+          {!photoLoaded && (
             <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-end overflow-hidden">
               {/* Studio White Presentation Screen Backdrop */}
               <div className="absolute inset-0 bg-gradient-to-b from-[#F8F9FB] via-[#EEF1F5] to-[#DFE3E9]" />
@@ -110,19 +89,19 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
               >
                 <defs>
                   {/* Skin Tone Gradient (Indonesian Medium Tan) */}
-                  <linearGradient id="adityaSkin2" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="adityaSkinFinal" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#C99468" />
                     <stop offset="50%" stopColor="#BA8356" />
                     <stop offset="100%" stopColor="#A26C41" />
                   </linearGradient>
 
-                  <linearGradient id="skinHighlight2" x1="0" y1="0" x2="1" y2="0">
+                  <linearGradient id="skinHighlightFinal" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="#DFAD82" stopOpacity="0.6" />
                     <stop offset="100%" stopColor="#B67F54" stopOpacity="0" />
                   </linearGradient>
 
                   {/* Batik Megamendung Pattern */}
-                  <pattern id="batikPattern2" width="70" height="70" patternUnits="userSpaceOnUse">
+                  <pattern id="batikPatternFinal" width="70" height="70" patternUnits="userSpaceOnUse">
                     <rect width="70" height="70" fill="#182032" />
                     <path d="M 0 35 Q 15 15, 35 25 T 65 25 A 10 10 0 0 1 60 40 Q 40 50, 20 40 Z" fill="#8C7456" opacity="0.9" />
                     <path d="M 5 35 Q 18 18, 32 27 T 60 27" stroke="#D8C4AA" strokeWidth="2" fill="none" />
@@ -134,7 +113,7 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
                     <circle cx="15" cy="65" r="2" fill="#E8DBC9" />
                   </pattern>
 
-                  <linearGradient id="adityaHair2" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="adityaHairFinal" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#241E1E" />
                     <stop offset="60%" stopColor="#151212" />
                     <stop offset="100%" stopColor="#080707" />
@@ -142,21 +121,21 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
                 </defs>
 
                 {/* Neck & Shadows */}
-                <path d="M 172 215 L 172 268 Q 200 282 228 268 L 228 215 Z" fill="url(#adityaSkin2)" />
+                <path d="M 172 215 L 172 268 Q 200 282 228 268 L 228 215 Z" fill="url(#adityaSkinFinal)" />
                 <path d="M 172 215 Q 200 238 228 215 L 228 232 Q 200 248 172 232 Z" fill="#84522C" opacity="0.4" />
 
                 {/* Ears */}
-                <ellipse cx="141" cy="182" rx="9.5" ry="16" fill="url(#adityaSkin2)" />
+                <ellipse cx="141" cy="182" rx="9.5" ry="16" fill="url(#adityaSkinFinal)" />
                 <path d="M 141 174 Q 144 182 141 190" stroke="#875630" strokeWidth="1.5" fill="none" />
-                <ellipse cx="259" cy="182" rx="9.5" ry="16" fill="url(#adityaSkin2)" />
+                <ellipse cx="259" cy="182" rx="9.5" ry="16" fill="url(#adityaSkinFinal)" />
                 <path d="M 259 174 Q 256 182 259 190" stroke="#875630" strokeWidth="1.5" fill="none" />
 
                 {/* Face Structure */}
-                <path d="M 145 158 Q 143 218 200 236 Q 257 218 255 158 Q 250 114 200 114 Q 150 114 145 158 Z" fill="url(#adityaSkin2)" />
-                <ellipse cx="170" cy="170" rx="20" ry="30" fill="url(#skinHighlight2)" />
+                <path d="M 145 158 Q 143 218 200 236 Q 257 218 255 158 Q 250 114 200 114 Q 150 114 145 158 Z" fill="url(#adityaSkinFinal)" />
+                <ellipse cx="170" cy="170" rx="20" ry="30" fill="url(#skinHighlightFinal)" />
 
                 {/* Hair */}
-                <path d="M 139 155 Q 143 112 176 101 Q 200 95 224 101 Q 257 112 261 155 Q 261 135 248 116 Q 224 105 200 105 Q 176 105 152 116 Q 141 135 139 155 Z" fill="url(#adityaHair2)" />
+                <path d="M 139 155 Q 143 112 176 101 Q 200 95 224 101 Q 257 112 261 155 Q 261 135 248 116 Q 224 105 200 105 Q 176 105 152 116 Q 141 135 139 155 Z" fill="url(#adityaHairFinal)" />
                 <path d="M 148 127 Q 200 114 252 127 Q 255 142 258 152 Q 248 133 200 128 Q 152 133 144 152 Q 146 140 148 127 Z" fill="#120F0F" />
 
                 {/* Eyebrows */}
@@ -179,14 +158,14 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
                 <path d="M 186 208 Q 200 213 214 208" stroke="#FFF" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.6" />
 
                 {/* Batik Shirt Body with Folded Arms Pose */}
-                <path d="M 95 300 Q 128 250 172 254 L 228 254 Q 272 250 305 300 L 330 435 L 70 435 Z" fill="url(#batikPattern2)" />
+                <path d="M 95 300 Q 128 250 172 254 L 228 254 Q 272 250 305 300 L 330 435 L 70 435 Z" fill="url(#batikPatternFinal)" />
 
                 {/* Collar */}
                 <path d="M 172 254 L 188 295 L 200 268 L 212 295 L 228 254 Z" fill="#141C2B" stroke="#D3BD9F" strokeWidth="1.8" />
                 <path d="M 200 292 L 200 425" stroke="#D3BD9F" strokeWidth="2" strokeDasharray="3,7" />
 
                 {/* Folded Arms */}
-                <path d="M 85 320 Q 105 390 190 410 Q 240 410 315 320 L 320 370 Q 240 435 180 435 Q 95 420 75 370 Z" fill="url(#batikPattern2)" stroke="#111722" strokeWidth="2" />
+                <path d="M 85 320 Q 105 390 190 410 Q 240 410 315 320 L 320 370 Q 240 435 180 435 Q 95 420 75 370 Z" fill="url(#batikPatternFinal)" stroke="#111722" strokeWidth="2" />
                 <path d="M 150 385 Q 200 405 250 385" stroke="#D3BD9F" strokeWidth="2.5" fill="none" />
                 <path d="M 160 395 Q 200 412 240 395" stroke="#9A7F5F" strokeWidth="1.5" fill="none" />
 
@@ -194,21 +173,6 @@ export const PortraitCard: React.FC<PortraitCardProps> = ({
               </svg>
             </div>
           )}
-
-          {/* Quick Photo Upload Button (Discreet in corner) to ensure Aditya can easily load WhatsApp Image 2026-09-26 */}
-          <label 
-            className="absolute top-3 right-3 z-30 p-2 rounded-full bg-black/50 hover:bg-black/80 text-white cursor-pointer backdrop-blur-md transition-all shadow-md flex items-center gap-1.5 text-[11px] font-semibold"
-            title="Pilih file foto WhatsApp Image 2026-09-26 asli Anda"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            {!hasRealPhoto && <span className="hidden sm:inline pr-1">Pasang Foto</span>}
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleFileChange} 
-              className="hidden" 
-            />
-          </label>
 
           {/* Bottom Gradient Overlay Box matching reference */}
           <div className="relative z-20 p-5 bg-gradient-to-t from-[#260E45]/95 via-[#2E1054]/85 to-transparent pt-12 text-white">
